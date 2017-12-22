@@ -80,4 +80,18 @@ public class GameWorld {
                 rectangles[i][j] = new Grid(i, j, Constants.GRID_STATE.NOT_FIRED);
             }
     }
+
+    public void showHint() {
+        reset();
+        for (int i = 0; i < 5; i++)
+            rectangles[0+i][3].markTarget();
+        for (int i = 0; i < 4; i++)
+            rectangles[6][6+i].markTarget();
+        for (int i = 0; i < 3; i++)
+            rectangles[7+i][1].markTarget();
+        for (int i = 0; i < 3; i++)
+            rectangles[1+i][9].markTarget();
+        for (int i = 0; i < 2; i++)
+            rectangles[8+i][6].markTarget();
+    }
 }

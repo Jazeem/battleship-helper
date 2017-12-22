@@ -34,6 +34,8 @@ public class InputHandler implements InputProcessor {
             myWorld.predictTargets(keycode - 7);
         if(keycode == 31)
             myWorld.reset();
+        if(keycode == 36)
+            myWorld.showHint();
         return true;
     }
 
