@@ -32,6 +32,8 @@ public class InputHandler implements InputProcessor {
         Gdx.app.log("Keycode", String.valueOf(keycode));
         if(keycode >= 8 && keycode <= 16)
             myWorld.predictTargets(keycode - 7);
+        if(keycode == 31)
+            myWorld.reset();
         return true;
     }
 
@@ -45,7 +47,9 @@ public class InputHandler implements InputProcessor {
         Gdx.app.log(String.valueOf(screenX), String.valueOf(screenY));
         if(screenX < GAME_SIZE && screenY < GAME_SIZE){
             int gridSize = RECT_SIZE * 2;
-            rectangles[screenX / gridSize][screenY / gridSize].setState();
+            int x = screenX / gridSize, y = screenY / gridSize;
+            if(x >= 0 && x <= 9 && y >= 0 && y <= 9)
+                rectangles[screenX / gridSize][screenY / gridSize].setState();
         }
         return true;
     }

@@ -24,10 +24,7 @@ public class GameWorld {
     private Grid [][] rectangles = new Grid[10][10];
 
     public GameWorld(){
-        for(int i = 0; i < 10; i++)
-            for (int j = 0 ; j < 10; j++){
-                rectangles[i][j] = new Grid(i, j, Constants.GRID_STATE.NOT_FIRED);
-            }
+        reset();
         random = new Random();
     }
 
@@ -66,6 +63,12 @@ public class GameWorld {
                  gridsWithHighestChance.get(random.nextInt(gridsWithHighestChance.size())).markTarget();
             }
         }
-        //rectangles[1][2].markTarget();
+    }
+
+    public void reset() {
+        for(int i = 0; i < 10; i++)
+            for (int j = 0 ; j < 10; j++){
+                rectangles[i][j] = new Grid(i, j, Constants.GRID_STATE.NOT_FIRED);
+            }
     }
 }
