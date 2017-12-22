@@ -1,0 +1,12 @@
+package com.clusterdev;
+
+/**
+ * Created by jazeem on 22/12/17.
+ */
+
+public class Constants {
+    public enum GRID_STATE {
+        NOT_FIRED, MISSED, HIT, WRECKED
+    }
+    public static final int RECT_SIZE = 25;
+}
