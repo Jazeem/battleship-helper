@@ -39,16 +39,16 @@ public class GameRenderer {
                         shapeRenderer.setColor(87 / 255.0f, 109 / 255.0f, 120 / 255.0f, 1);
                         break;
                     case MISSED:
-                        shapeRenderer.setColor(0, 0, 1, 1);
+                        shapeRenderer.setColor(9 / 255.0f, 106 / 255.0f, 203 / 255.0f, 1);
                         break;
                     case HIT:
-                        shapeRenderer.setColor(1, 0, 0, 1);
+                        shapeRenderer.setColor(157 / 255.0f, 18 / 255.0f, 25 / 255.0f, 1);
                         break;
                     case WRECKED:
-                        shapeRenderer.setColor(0.5f, 0, 0, 1);
+                        shapeRenderer.setColor(120 / 255.0f, 39 / 255.0f, 49 / 255.0f, 1);
                         break;
                     case MARKED:
-                        shapeRenderer.setColor(0, 1, 0, 1);
+                        shapeRenderer.setColor(158 / 255.0f, 176 / 255.0f, 30 / 255.0f, 1);
                         break;
                 }
                 shapeRenderer.rect(myWorld.getRectangles()[i][j].getX() * RECT_SIZE, myWorld.getRectangles()[i][j].getY() * RECT_SIZE,
