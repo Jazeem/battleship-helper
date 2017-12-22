@@ -35,6 +35,7 @@ public class GameWorld {
     public void predictTargets(int x) {
         int top, right, bottom, left, possibilities, maxPossibility = 1;
         List<Grid> gridsWithHighestChance = new ArrayList<Grid>();
+        List<Grid> gridsWithHighestChanceEven = new ArrayList<Grid>();
         if(x > 1 && x < 6){
             for(int i = 0; i < 10; i++)
                 for (int j = 0 ; j < 10; j++){
@@ -60,7 +61,15 @@ public class GameWorld {
                     }
                 }
             if(gridsWithHighestChance.size() > 0){
-                 gridsWithHighestChance.get(random.nextInt(gridsWithHighestChance.size())).markTarget();
+                gridsWithHighestChanceEven = new ArrayList<Grid>();
+                for (Grid grid: gridsWithHighestChance) {
+                    if((grid.getX() + grid.getY()) % 2 == 0 )
+                        gridsWithHighestChanceEven.add(grid);
+                }
+                if(gridsWithHighestChanceEven.size() > 0)
+                    gridsWithHighestChanceEven.get(random.nextInt(gridsWithHighestChanceEven.size())).markTarget();
+                else
+                    gridsWithHighestChance.get(random.nextInt(gridsWithHighestChance.size())).markTarget();
             }
         }
     }
