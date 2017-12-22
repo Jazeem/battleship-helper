@@ -31,12 +31,26 @@ public class GameRenderer {
 
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
-        shapeRenderer.setColor(87 / 255.0f, 109 / 255.0f, 120 / 255.0f, 1);
 
         for(int i = 0; i < 10; i++){
-            for(int j = 0; j < 10; j++)
+            for(int j = 0; j < 10; j++){
+                switch (myWorld.getRectangles()[i][j].getState()){
+                    case NOT_FIRED:
+                        shapeRenderer.setColor(87 / 255.0f, 109 / 255.0f, 120 / 255.0f, 1);
+                        break;
+                    case MISSED:
+                        shapeRenderer.setColor(0, 0, 1, 1);
+                        break;
+                    case HIT:
+                        shapeRenderer.setColor(1, 0, 0, 1);
+                        break;
+                    case WRECKED:
+                        shapeRenderer.setColor(0.5f, 0, 0, 1);
+                        break;
+                }
                 shapeRenderer.rect(myWorld.getRectangles()[i][j].getX() * RECT_SIZE, myWorld.getRectangles()[i][j].getY() * RECT_SIZE,
                         RECT_SIZE, RECT_SIZE);
+            }
         }
 
 

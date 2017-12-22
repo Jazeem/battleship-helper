@@ -5,6 +5,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.clusterdev.gameworld.GameRenderer;
 import com.clusterdev.gameworld.GameWorld;
+import com.clusterdev.helpers.InputHandler;
 
 /**
  * Created by jazeem on 22/12/17.
@@ -18,6 +19,7 @@ public class GameScreen implements Screen {
     public GameScreen(){
         world = new GameWorld();
         renderer = new GameRenderer(world);
+        Gdx.input.setInputProcessor(new InputHandler(world.getRectangles()));
     }
 
     @Override

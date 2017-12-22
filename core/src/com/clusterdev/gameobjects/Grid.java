@@ -9,7 +9,25 @@ import com.clusterdev.Constants;
 public class Grid {
     int x, y;
 
+    public void setState() {
+        switch (state){
+            case NOT_FIRED:
+                state = Constants.GRID_STATE.MISSED;
+                break;
+            case MISSED:
+                state = Constants.GRID_STATE.HIT;
+                break;
+            case HIT:
+                state = Constants.GRID_STATE.WRECKED;
+                break;
+            case WRECKED:
+                state = Constants.GRID_STATE.NOT_FIRED;
+                break;
+        }
+    }
+
     public int getX() {
+
         return x;
     }
 
