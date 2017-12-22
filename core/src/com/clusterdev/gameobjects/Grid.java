@@ -12,6 +12,9 @@ public class Grid {
     public void setState() {
         switch (state){
             case NOT_FIRED:
+                state = Constants.GRID_STATE.MARKED;
+                break;
+            case MARKED:
                 state = Constants.GRID_STATE.MISSED;
                 break;
             case MISSED:
@@ -23,6 +26,7 @@ public class Grid {
             case WRECKED:
                 state = Constants.GRID_STATE.NOT_FIRED;
                 break;
+
         }
     }
 
@@ -44,5 +48,9 @@ public class Grid {
         this.x = x;
         this.y = y;
         this.state = state;
+    }
+
+    public void markTarget() {
+        this.state = Constants.GRID_STATE.MARKED;
     }
 }

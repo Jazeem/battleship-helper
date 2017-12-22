@@ -47,6 +47,9 @@ public class GameRenderer {
                     case WRECKED:
                         shapeRenderer.setColor(0.5f, 0, 0, 1);
                         break;
+                    case MARKED:
+                        shapeRenderer.setColor(0, 1, 0, 1);
+                        break;
                 }
                 shapeRenderer.rect(myWorld.getRectangles()[i][j].getX() * RECT_SIZE, myWorld.getRectangles()[i][j].getY() * RECT_SIZE,
                         RECT_SIZE, RECT_SIZE);

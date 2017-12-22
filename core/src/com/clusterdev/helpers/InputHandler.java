@@ -3,6 +3,7 @@ package com.clusterdev.helpers;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.clusterdev.gameobjects.Grid;
+import com.clusterdev.gameworld.GameWorld;
 
 import static com.clusterdev.Constants.GAME_SIZE;
 import static com.clusterdev.Constants.RECT_SIZE;
@@ -14,9 +15,11 @@ import static com.clusterdev.Constants.RECT_SIZE;
 public class InputHandler implements InputProcessor {
 
     private Grid[][] rectangles;
+    private GameWorld myWorld;
 
-    public InputHandler(Grid[][] rectangles) {
-        this.rectangles = rectangles;
+    public InputHandler(GameWorld world) {
+        this.rectangles = world.getRectangles();
+        this.myWorld = world;
     }
 
     @Override
@@ -26,7 +29,10 @@ public class InputHandler implements InputProcessor {
 
     @Override
     public boolean keyUp(int keycode) {
-        return false;
+        Gdx.app.log("Keycode", String.valueOf(keycode));
+        if(keycode >= 8 && keycode <= 16)
+            myWorld.predictTargets(keycode - 7);
+        return true;
     }
 
     @Override
@@ -39,7 +45,7 @@ public class InputHandler implements InputProcessor {
         Gdx.app.log(String.valueOf(screenX), String.valueOf(screenY));
         if(screenX < GAME_SIZE && screenY < GAME_SIZE){
             int gridSize = RECT_SIZE * 2;
-            rectangles[screenY / gridSize][screenX / gridSize].setState();
+            rectangles[screenX / gridSize][screenY / gridSize].setState();
         }
         return true;
     }

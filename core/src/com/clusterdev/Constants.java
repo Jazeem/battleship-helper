@@ -6,7 +6,7 @@ package com.clusterdev;
 
 public class Constants {
     public enum GRID_STATE {
-        NOT_FIRED, MISSED, HIT, WRECKED
+        NOT_FIRED, MISSED, HIT, MARKED, WRECKED
     }
     public static final int RECT_SIZE = 25;
     public static final int GAME_SIZE = 500;
