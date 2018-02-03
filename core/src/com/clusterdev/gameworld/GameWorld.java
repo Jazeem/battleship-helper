@@ -49,7 +49,7 @@ public class GameWorld {
                             bottom++;
                         for(int k = i; k > (i - x) && k >= 0 && rectangles[k][j].getState() == Constants.GRID_STATE.NOT_FIRED; k--)
                             left++;
-                        possibilities = top + bottom + right + left - (2 * x);
+                        possibilities = Math.max(top + bottom - x, 0) + Math.max(right + left - x, 0);
                         if(possibilities > maxPossibility){
                             maxPossibility = possibilities;
                             gridsWithHighestChance = new ArrayList<Grid>();
