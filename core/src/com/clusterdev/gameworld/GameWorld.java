@@ -3,11 +3,15 @@ package com.clusterdev.gameworld;
 import com.badlogic.gdx.Gdx;
 import com.clusterdev.Constants;
 import com.clusterdev.gameobjects.Grid;
+import com.github.nkzawa.socketio.client.IO;
+import com.github.nkzawa.socketio.client.Socket;
 
 import java.awt.Rectangle;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import com.clusterdev.Constants.GAME_STATE;
 
 /**
  * Created by jazeem on 22/12/17.
@@ -17,15 +21,30 @@ public class GameWorld {
 
     private Random random;
 
+    public GAME_STATE getGameState() {
+        return gameState;
+    }
+
     public Grid[][] getRectangles() {
         return rectangles;
     }
 
     private Grid [][] rectangles = new Grid[10][10];
 
+    private GAME_STATE gameState;
+
+    private Socket mSocket;
+    {
+        try {
+            mSocket = IO.socket("http://192.168.1.5:3000");
+        } catch (URISyntaxException e) {}
+    }
+
     public GameWorld(){
         reset();
         random = new Random();
+        gameState = GAME_STATE.LOBBY;
+        mSocket.connect();
     }
 
     public void update(float delta) {

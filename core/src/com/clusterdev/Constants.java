@@ -10,4 +10,7 @@ public class Constants {
     }
     public static final int RECT_SIZE = 25;
     public static final int GAME_SIZE = 500;
+    public enum GAME_STATE {
+        LOBBY, PLAYING
+    }
 }
