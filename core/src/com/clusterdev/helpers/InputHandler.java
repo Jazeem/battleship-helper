@@ -2,11 +2,15 @@ package com.clusterdev.helpers;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
+import com.clusterdev.Constants;
 import com.clusterdev.gameobjects.Grid;
 import com.clusterdev.gameworld.GameWorld;
 
-import static com.clusterdev.Constants.GAME_SIZE;
+import static com.clusterdev.Constants.GAME_HEIGHT;
+import static com.clusterdev.Constants.GAME_WIDTH;
 import static com.clusterdev.Constants.RECT_SIZE;
+import static com.clusterdev.Constants.xOffset;
+import static com.clusterdev.Constants.yOffset;
 
 /**
  * Created by jazeem on 22/12/17.
@@ -47,11 +51,19 @@ public class InputHandler implements InputProcessor {
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         Gdx.app.log(String.valueOf(screenX), String.valueOf(screenY));
-        if(screenX < GAME_SIZE && screenY < GAME_SIZE){
-            int gridSize = RECT_SIZE * 2;
-            int x = screenX / gridSize, y = screenY / gridSize;
+        int posX = screenX - xOffset;
+        int posY = screenY - yOffset;
+        if(posX < GAME_WIDTH && posY < GAME_HEIGHT){
+            int gridSize = RECT_SIZE ;
+            int x = posX / gridSize, y = posY / gridSize;
             if(x >= 0 && x <= 9 && y >= 0 && y <= 9)
-                rectangles[screenX / gridSize][screenY / gridSize].setState();
+                myWorld.gridClicked(x, y);
+        }
+        if(myWorld.getGameState() == Constants.GAME_STATE.ARRANGE){
+            if(screenX < 50 && screenX > 20 && screenY > (GAME_HEIGHT - 20) && screenY < (GAME_HEIGHT - 10))
+                myWorld.flipClicked();
+            if(screenX < 230 && screenX > 200 && screenY > (GAME_HEIGHT - 20) && screenY < (GAME_HEIGHT - 10))
+                myWorld.arrangeComplete();
         }
         return true;
     }
