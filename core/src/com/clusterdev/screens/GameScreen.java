@@ -13,6 +13,10 @@ import com.clusterdev.helpers.InputHandler;
 
 public class GameScreen implements Screen {
 
+    public GameWorld getWorld() {
+        return world;
+    }
+
     private GameWorld world;
     private GameRenderer renderer;
 

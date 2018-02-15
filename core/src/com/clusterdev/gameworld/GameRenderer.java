@@ -13,7 +13,9 @@ import static com.clusterdev.Constants.GAME_HEIGHT;
 import static com.clusterdev.Constants.GAME_WIDTH;
 import static com.clusterdev.Constants.RECT_SIZE;
 import static com.clusterdev.Constants.xOffset;
+import static com.clusterdev.Constants.xOffsetEnemy;
 import static com.clusterdev.Constants.yOffset;
+import static com.clusterdev.Constants.yOffsetEnemy;
 
 /**
  * Created by jazeem on 22/12/17.
@@ -41,12 +43,14 @@ public class GameRenderer {
             BitmapFont font = new BitmapFont();
             SpriteBatch batch = new SpriteBatch();
             batch.begin();
+            font.getData().setScale(3f);
             font.draw(batch, "Waiting for opponent", GAME_WIDTH/2, GAME_HEIGHT/2);
             batch.end();
         }else if(myWorld.getGameState() == Constants.GAME_STATE.FULL){
             BitmapFont font = new BitmapFont();
             SpriteBatch batch = new SpriteBatch();
             batch.begin();
+            font.getData().setScale(3f);
             font.draw(batch, "Game is full", GAME_WIDTH/2, GAME_HEIGHT/2);
             batch.end();
         }else{
@@ -111,14 +115,62 @@ public class GameRenderer {
             }
             shapeRenderer.end();
 
-            BitmapFont font = new BitmapFont();
-            SpriteBatch batch = new SpriteBatch();
-            batch.begin();
-            font.draw(batch, "Arrange your ships", GAME_WIDTH/2, GAME_HEIGHT - 10);
-            font.draw(batch, "Flip", 20, 20);
-            font.draw(batch, "Done", 200, 20);
-            batch.end();
-
+            if(myWorld.getGameState() == Constants.GAME_STATE.ARRANGE){
+                BitmapFont font = new BitmapFont();
+                SpriteBatch batch = new SpriteBatch();
+                batch.begin();
+                font.getData().setScale(3f);
+                if(myWorld.isArrangeWaiting())
+                    font.draw(batch, "Waiting for opponent", GAME_WIDTH/2 + 200, GAME_HEIGHT/2);
+                else
+                    font.draw(batch, "Arrange your ships", GAME_WIDTH/2, GAME_HEIGHT - 10);
+                font.draw(batch, "Flip", 80, 80);
+                font.draw(batch, "Done", 1000, 80);
+                batch.end();
+            } else {
+                shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+                for(int i = 0; i < 10; i++){
+                    for(int j = 0; j < 10; j++){
+                        switch (myWorld.getEnemyRectangles()[i][j].getState()){
+                            case NOT_FIRED:
+                                shapeRenderer.setColor(87 / 255.0f, 109 / 255.0f, 120 / 255.0f, 1);
+                                break;
+                            case MISSED:
+                                shapeRenderer.setColor(9 / 255.0f, 106 / 255.0f, 203 / 255.0f, 1);
+                                break;
+                            case HIT:
+                                shapeRenderer.setColor(157 / 255.0f, 18 / 255.0f, 25 / 255.0f, 1);
+                                break;
+                            case WRECKED:
+                                shapeRenderer.setColor(120 / 255.0f, 39 / 255.0f, 49 / 255.0f, 1);
+                                break;
+                            case MARKED:
+                                shapeRenderer.setColor(158 / 255.0f, 176 / 255.0f, 30 / 255.0f, 1);
+                                break;
+                        }
+                        shapeRenderer.rect(xOffsetEnemy + myWorld.getEnemyRectangles()[i][j].getX() * RECT_SIZE,
+                                yOffsetEnemy + myWorld.getEnemyRectangles()[i][j].getY() * RECT_SIZE,
+                                RECT_SIZE, RECT_SIZE);
+                    }
+                }
+                shapeRenderer.end();
+                shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+                shapeRenderer.setColor(255 / 255.0f, 109 / 255.0f, 120 / 255.0f, 1);
+                for(int i = 0; i < 10; i++) {
+                    for (int j = 0; j < 10; j++)
+                        shapeRenderer.rect(xOffsetEnemy + myWorld.getEnemyRectangles()[i][j].getX() * RECT_SIZE,
+                                yOffsetEnemy + myWorld.getEnemyRectangles()[i][j].getY() * RECT_SIZE,
+                                RECT_SIZE, RECT_SIZE);
+                }
+                shapeRenderer.end();
+                BitmapFont font = new BitmapFont();
+                SpriteBatch batch = new SpriteBatch();
+                batch.begin();
+                font.getData().setScale(3f);
+                font.draw(batch, "Shots available: " + myWorld.getShotsAvailable(), 80, 80);
+                font.draw(batch, "Fire", 1000, 80);
+                batch.end();
+            }
         }
     }
 }

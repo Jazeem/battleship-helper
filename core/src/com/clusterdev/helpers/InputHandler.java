@@ -10,7 +10,9 @@ import static com.clusterdev.Constants.GAME_HEIGHT;
 import static com.clusterdev.Constants.GAME_WIDTH;
 import static com.clusterdev.Constants.RECT_SIZE;
 import static com.clusterdev.Constants.xOffset;
+import static com.clusterdev.Constants.xOffsetEnemy;
 import static com.clusterdev.Constants.yOffset;
+import static com.clusterdev.Constants.yOffsetEnemy;
 
 /**
  * Created by jazeem on 22/12/17.
@@ -51,8 +53,16 @@ public class InputHandler implements InputProcessor {
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         Gdx.app.log(String.valueOf(screenX), String.valueOf(screenY));
-        int posX = screenX - xOffset;
-        int posY = screenY - yOffset;
+        int posX = 0, posY = 0;
+        if(myWorld.getGameState() == Constants.GAME_STATE.ARRANGE) {
+            posX = screenX - xOffset;
+            posY = screenY - yOffset;
+        }
+        else if(myWorld.getGameState() == Constants.GAME_STATE.PLAYING){
+            posX = screenX - xOffsetEnemy;
+            posY = screenY - yOffsetEnemy;
+        }
+
         if(posX < GAME_WIDTH && posY < GAME_HEIGHT){
             int gridSize = RECT_SIZE ;
             int x = posX / gridSize, y = posY / gridSize;
@@ -60,10 +70,14 @@ public class InputHandler implements InputProcessor {
                 myWorld.gridClicked(x, y);
         }
         if(myWorld.getGameState() == Constants.GAME_STATE.ARRANGE){
-            if(screenX < 50 && screenX > 20 && screenY > (GAME_HEIGHT - 20) && screenY < (GAME_HEIGHT - 10))
+            if(screenX < 180 && screenX > 80 && screenY > (GAME_HEIGHT - 80) && screenY < (GAME_HEIGHT - 60))
                 myWorld.flipClicked();
-            if(screenX < 230 && screenX > 200 && screenY > (GAME_HEIGHT - 20) && screenY < (GAME_HEIGHT - 10))
-                myWorld.arrangeComplete();
+            if(screenX < 1100 && screenX > 1000 && screenY > (GAME_HEIGHT - 80) && screenY < (GAME_HEIGHT - 60)) {
+                if(myWorld.getGameState() == Constants.GAME_STATE.ARRANGE)
+                    myWorld.arrangeComplete();
+//                else if(myWorld.getGameState() == Constants.GAME_STATE.PLAYING)
+//                    myWorld.fire();
+            }
         }
         return true;
     }

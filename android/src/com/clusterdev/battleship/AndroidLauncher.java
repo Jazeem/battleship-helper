@@ -13,4 +13,10 @@ public class AndroidLauncher extends AndroidApplication {
 		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
 		initialize(new BattleshipGame(), config);
 	}
+
+	@Override
+	protected void createWakeLock(boolean use) {
+		use = true;
+		super.createWakeLock(use);
+	}
 }

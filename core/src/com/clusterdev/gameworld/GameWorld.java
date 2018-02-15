@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import com.clusterdev.Constants.GAME_STATE;
+import com.clusterdev.helpers.SocketHelper;
 
 import io.socket.client.IO;
 import io.socket.client.Socket;
@@ -32,11 +33,18 @@ public class GameWorld {
         return rectangles;
     }
 
-    private Grid [][] rectangles = new Grid[10][10];
-    private Grid [][] myRectangles = new Grid[10][10];
+    public Grid[][] getEnemyRectangles() {
+        return enemyRectangles;
+    }
 
+    private Grid [][] rectangles = new Grid[10][10];
+    private Grid [][] enemyRectangles = new Grid[10][10];
+
+    private boolean arrangeWaiting = false;
 
     private GAME_STATE gameState;
+
+    private int shotsAvailable = 6;
 
     public Grid[][] getMyShips() {
         return myShips;
@@ -73,36 +81,19 @@ public class GameWorld {
             }
     };
 
-    private Socket mSocket;
 
-
-    private Emitter.Listener onGameStarted = new Emitter.Listener() {
-        @Override
-        public void call(Object... args) {
-            gameState = GAME_STATE.ARRANGE;
-        }
-    };
-
-    private Emitter.Listener onGameOver = new Emitter.Listener() {
-        @Override
-        public void call(Object... args) {
-            if(((String)args[0]).equals("roomfull"))
-                gameState = GAME_STATE.FULL;
-        }
-    };
 
     int shipSelected = -1;
+
+    public void setGameState(GAME_STATE gameState) {
+        this.gameState = gameState;
+    }
 
     public GameWorld(){
         reset();
         random = new Random();
         gameState = GAME_STATE.LOBBY;
-        try {
-            mSocket = IO.socket("http://192.168.1.5:3000");
-        } catch (URISyntaxException e) {}
-        mSocket.connect();
-        mSocket.on("gamestarted", onGameStarted);
-        mSocket.on("gameover", onGameOver);
+
     }
 
     public void update(float delta) {
@@ -155,6 +146,7 @@ public class GameWorld {
         for(int i = 0; i < 10; i++)
             for (int j = 0 ; j < 10; j++){
                 rectangles[i][j] = new Grid(i, j, Constants.GRID_STATE.NOT_FIRED);
+                enemyRectangles[i][j] = new Grid(i, j, Constants.GRID_STATE.NOT_FIRED);
             }
     }
 
@@ -235,6 +227,15 @@ public class GameWorld {
                 } else
                     shipSelected = shipClicked;
             }
+        } else if(gameState == GAME_STATE.PLAYING){
+            if(shotsAvailable > 0 && enemyRectangles[x][y].getState() == Constants.GRID_STATE.NOT_FIRED){
+                enemyRectangles[x][y].setState(Constants.GRID_STATE.MARKED);
+                shotsAvailable--;
+            }
+            if(enemyRectangles[x][y].getState() == Constants.GRID_STATE.MARKED){
+                enemyRectangles[x][y].setState(Constants.GRID_STATE.NOT_FIRED);
+                shotsAvailable++;
+            }
         }
     }
 
@@ -245,9 +246,19 @@ public class GameWorld {
         }
     }
 
+    public boolean isArrangeWaiting() {
+        return arrangeWaiting;
+    }
+
+    public int getShotsAvailable() {
+        return shotsAvailable;
+    }
+
     private String serialize(Grid[][] ships){
         String retVal = "";
+
         for (Grid[] ship: myShips) {
+
             for(Grid grid: ship){
                 retVal += grid.getX();
                 retVal += grid.getY();
@@ -257,6 +268,11 @@ public class GameWorld {
     }
 
     public void arrangeComplete() {
-        mSocket.emit("shiparranged", serialize(myShips));
+        Gdx.app.log("Arrange", "Complete");
+        SocketHelper.getInstance(this).mSocket.emit("shiparranged", serialize(myShips));
+    }
+
+    public void setArrangeWaiting(boolean arrangeWaiting) {
+        this.arrangeWaiting = arrangeWaiting;
     }
 }
