@@ -9,6 +9,10 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.clusterdev.Constants;
 import com.clusterdev.gameobjects.Grid;
 
+import static com.clusterdev.Constants.B1X_OFFSET;
+import static com.clusterdev.Constants.B1Y_OFFSET;
+import static com.clusterdev.Constants.B2X_OFFSET;
+import static com.clusterdev.Constants.B2Y_OFFSET;
 import static com.clusterdev.Constants.GAME_HEIGHT;
 import static com.clusterdev.Constants.GAME_WIDTH;
 import static com.clusterdev.Constants.RECT_SIZE;
@@ -26,6 +30,8 @@ public class GameRenderer {
     private GameWorld myWorld;
     private OrthographicCamera cam;
     private ShapeRenderer shapeRenderer;
+    private BitmapFont font;
+    private SpriteBatch batch;
 
     public GameRenderer(GameWorld world) {
         myWorld = world;
@@ -33,6 +39,9 @@ public class GameRenderer {
         cam.setToOrtho(true, GAME_WIDTH, GAME_HEIGHT);
         shapeRenderer = new ShapeRenderer();
         shapeRenderer.setProjectionMatrix(cam.combined);
+        font = new BitmapFont();
+        font.getData().setScale(3f);
+        batch = new SpriteBatch();
     }
 
     public void render() {
@@ -40,17 +49,11 @@ public class GameRenderer {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         if(myWorld.getGameState() == Constants.GAME_STATE.LOBBY){
-            BitmapFont font = new BitmapFont();
-            SpriteBatch batch = new SpriteBatch();
             batch.begin();
-            font.getData().setScale(3f);
             font.draw(batch, "Waiting for opponent", GAME_WIDTH/2, GAME_HEIGHT/2);
             batch.end();
         }else if(myWorld.getGameState() == Constants.GAME_STATE.FULL){
-            BitmapFont font = new BitmapFont();
-            SpriteBatch batch = new SpriteBatch();
             batch.begin();
-            font.getData().setScale(3f);
             font.draw(batch, "Game is full", GAME_WIDTH/2, GAME_HEIGHT/2);
             batch.end();
         }else{
@@ -102,30 +105,31 @@ public class GameRenderer {
                             break;
                     }
                 for (Grid grid: myWorld.getMyShips()[i])
-                    shapeRenderer.rect(xOffset + grid.getX() * RECT_SIZE, yOffset + grid.getY() * RECT_SIZE, RECT_SIZE, RECT_SIZE);
+                    if(myWorld.getRectangles()[grid.getX()][grid.getY()].getState() == Constants.GRID_STATE.NOT_FIRED) {
+                        shapeRenderer.rect(xOffset + grid.getX() * RECT_SIZE, yOffset + grid.getY() * RECT_SIZE
+                                , RECT_SIZE, RECT_SIZE);
+                    }
             }
             shapeRenderer.end();
 
             shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
             shapeRenderer.setColor(255 / 255.0f, 109 / 255.0f, 120 / 255.0f, 1);
             for(int i = 0; i < 10; i++) {
-                for (int j = 0; j < 10; j++)
+                for (int j = 0; j < 10; j++){
                     shapeRenderer.rect(xOffset + myWorld.getRectangles()[i][j].getX() * RECT_SIZE, yOffset + myWorld.getRectangles()[i][j].getY() * RECT_SIZE,
                             RECT_SIZE, RECT_SIZE);
+                }
             }
             shapeRenderer.end();
 
             if(myWorld.getGameState() == Constants.GAME_STATE.ARRANGE){
-                BitmapFont font = new BitmapFont();
-                SpriteBatch batch = new SpriteBatch();
                 batch.begin();
-                font.getData().setScale(3f);
                 if(myWorld.isArrangeWaiting())
                     font.draw(batch, "Waiting for opponent", GAME_WIDTH/2 + 200, GAME_HEIGHT/2);
                 else
                     font.draw(batch, "Arrange your ships", GAME_WIDTH/2, GAME_HEIGHT - 10);
-                font.draw(batch, "Flip", 80, 80);
-                font.draw(batch, "Done", 1000, 80);
+                font.draw(batch, "Flip", B1X_OFFSET, B1Y_OFFSET);
+                font.draw(batch, "Done", B2X_OFFSET, B2Y_OFFSET);
                 batch.end();
             } else {
                 shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
@@ -163,12 +167,11 @@ public class GameRenderer {
                                 RECT_SIZE, RECT_SIZE);
                 }
                 shapeRenderer.end();
-                BitmapFont font = new BitmapFont();
-                SpriteBatch batch = new SpriteBatch();
                 batch.begin();
-                font.getData().setScale(3f);
-                font.draw(batch, "Shots available: " + myWorld.getShotsAvailable(), 80, 80);
-                font.draw(batch, "Fire", 1000, 80);
+                font.draw(batch, "Shots available: " + myWorld.getShotsAvailable(), B1X_OFFSET, B1Y_OFFSET);
+                font.draw(batch, "Fire", B2X_OFFSET, B2Y_OFFSET);
+                if(myWorld.isPlayWaiting())
+                    font.draw(batch, "Waiting for opponent", B1X_OFFSET, 2 * B1Y_OFFSET);
                 batch.end();
             }
         }

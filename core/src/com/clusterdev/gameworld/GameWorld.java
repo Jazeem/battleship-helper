@@ -33,6 +33,10 @@ public class GameWorld {
         return rectangles;
     }
 
+    public boolean isPlayWaiting() {
+        return playWaiting;
+    }
+
     public Grid[][] getEnemyRectangles() {
         return enemyRectangles;
     }
@@ -41,6 +45,7 @@ public class GameWorld {
     private Grid [][] enemyRectangles = new Grid[10][10];
 
     private boolean arrangeWaiting = false;
+    private boolean playWaiting = false;
 
     private GAME_STATE gameState;
 
@@ -227,12 +232,14 @@ public class GameWorld {
                 } else
                     shipSelected = shipClicked;
             }
-        } else if(gameState == GAME_STATE.PLAYING){
-            if(shotsAvailable > 0 && enemyRectangles[x][y].getState() == Constants.GRID_STATE.NOT_FIRED){
-                enemyRectangles[x][y].setState(Constants.GRID_STATE.MARKED);
-                shotsAvailable--;
+        } else if(gameState == GAME_STATE.PLAYING && !playWaiting){
+            if(enemyRectangles[x][y].getState() == Constants.GRID_STATE.NOT_FIRED){
+                if(shotsAvailable > 0){
+                    enemyRectangles[x][y].setState(Constants.GRID_STATE.MARKED);
+                    shotsAvailable--;
+                }
             }
-            if(enemyRectangles[x][y].getState() == Constants.GRID_STATE.MARKED){
+            else if(enemyRectangles[x][y].getState() == Constants.GRID_STATE.MARKED){
                 enemyRectangles[x][y].setState(Constants.GRID_STATE.NOT_FIRED);
                 shotsAvailable++;
             }
@@ -254,7 +261,7 @@ public class GameWorld {
         return shotsAvailable;
     }
 
-    private String serialize(Grid[][] ships){
+    private String serializeShips(){
         String retVal = "";
 
         for (Grid[] ship: myShips) {
@@ -267,12 +274,64 @@ public class GameWorld {
         return retVal;
     }
 
+    private String serializeMarkedShips(){
+        String retVal = "";
+        for(Grid[] grids: enemyRectangles){
+            for(Grid grid: grids){
+                if(grid.getState() == Constants.GRID_STATE.MARKED){
+                    retVal += grid.getX();
+                    retVal += grid.getY();
+                }
+            }
+        }
+        return retVal;
+    }
+
     public void arrangeComplete() {
         Gdx.app.log("Arrange", "Complete");
-        SocketHelper.getInstance(this).mSocket.emit("shiparranged", serialize(myShips));
+        SocketHelper.getInstance(this).mSocket.emit("shiparranged", serializeShips());
     }
 
     public void setArrangeWaiting(boolean arrangeWaiting) {
         this.arrangeWaiting = arrangeWaiting;
+    }
+
+    public void setPlayWaiting(boolean playWaiting) {
+        this.playWaiting = playWaiting;
+    }
+
+    public void fire() {
+        Gdx.app.log("Fire", "Called");
+        if(shotsAvailable == 0){
+            SocketHelper.getInstance(this).mSocket.emit("shotsfired", serializeMarkedShips());
+        }
+    }
+
+    public void markPlayerResult(String result) {
+        markResult(result.substring(0, result.length() - 1), enemyRectangles);
+        shotsAvailable = Character.getNumericValue(result.charAt(result.length() - 1));
+    }
+
+    private void markResult(String result, Grid[][] rect){
+        for(int i = 0; i < result.length(); i += 3){
+            switch (result.charAt(i+2)){
+                case '0':
+                    rect[Character.getNumericValue(result.charAt(i))][Character.getNumericValue(result.charAt(i+1))]
+                            .setState(Constants.GRID_STATE.MISSED);
+                    break;
+                case '1':
+                    rect[Character.getNumericValue(result.charAt(i))][Character.getNumericValue(result.charAt(i+1))]
+                            .setState(Constants.GRID_STATE.HIT);
+                    break;
+                case '2':
+                    rect[Character.getNumericValue(result.charAt(i))][Character.getNumericValue(result.charAt(i+1))]
+                            .setState(Constants.GRID_STATE.WRECKED);
+                    break;
+            }
+        }
+    }
+
+    public void markEnemyResult(String result) {
+        markResult(result, rectangles);
     }
 }

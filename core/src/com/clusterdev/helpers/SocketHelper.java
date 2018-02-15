@@ -52,5 +52,25 @@ public class SocketHelper {
                     world.setGameState(Constants.GAME_STATE.PLAYING);
             }
         });
+        mSocket.on("playerresult", new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                world.markPlayerResult((String)args[0]);
+                world.setPlayWaiting(false);
+            }
+        });
+        mSocket.on("enemyresult", new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                world.markEnemyResult((String)args[0]);
+            }
+        });
+        mSocket.on("fire", new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                if(args[0].equals("waiting"))
+                    world.setPlayWaiting(true);
+            }
+        });
     }
 }

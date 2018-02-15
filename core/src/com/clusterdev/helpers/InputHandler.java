@@ -6,6 +6,10 @@ import com.clusterdev.Constants;
 import com.clusterdev.gameobjects.Grid;
 import com.clusterdev.gameworld.GameWorld;
 
+import static com.clusterdev.Constants.B1X_OFFSET;
+import static com.clusterdev.Constants.B1Y_OFFSET;
+import static com.clusterdev.Constants.B2X_OFFSET;
+import static com.clusterdev.Constants.B2Y_OFFSET;
 import static com.clusterdev.Constants.GAME_HEIGHT;
 import static com.clusterdev.Constants.GAME_WIDTH;
 import static com.clusterdev.Constants.RECT_SIZE;
@@ -70,14 +74,16 @@ public class InputHandler implements InputProcessor {
                 myWorld.gridClicked(x, y);
         }
         if(myWorld.getGameState() == Constants.GAME_STATE.ARRANGE){
-            if(screenX < 180 && screenX > 80 && screenY > (GAME_HEIGHT - 80) && screenY < (GAME_HEIGHT - 60))
+            if(screenX < (100 + B1X_OFFSET) && screenX > B1X_OFFSET && screenY > (GAME_HEIGHT - B1Y_OFFSET)
+                    && screenY < (GAME_HEIGHT - (B1Y_OFFSET - 40)))
                 myWorld.flipClicked();
-            if(screenX < 1100 && screenX > 1000 && screenY > (GAME_HEIGHT - 80) && screenY < (GAME_HEIGHT - 60)) {
-                if(myWorld.getGameState() == Constants.GAME_STATE.ARRANGE)
-                    myWorld.arrangeComplete();
-//                else if(myWorld.getGameState() == Constants.GAME_STATE.PLAYING)
-//                    myWorld.fire();
-            }
+        }
+        if(screenX < (B2X_OFFSET + 100) && screenX > B2X_OFFSET && screenY > (GAME_HEIGHT - B2Y_OFFSET)
+                && screenY < (GAME_HEIGHT - (B2Y_OFFSET - 40))) {
+            if(myWorld.getGameState() == Constants.GAME_STATE.ARRANGE)
+                myWorld.arrangeComplete();
+            else if(myWorld.getGameState() == Constants.GAME_STATE.PLAYING)
+                myWorld.fire();
         }
         return true;
     }
