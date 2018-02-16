@@ -33,7 +33,12 @@ public class SocketHelper {
         mSocket.on("gamestarted", new Emitter.Listener() {
             @Override
             public void call(Object... args) {
-                world.setGameState(Constants.GAME_STATE.ARRANGE);
+                if(args[0].equals("new")){
+                    world.reset();
+                    world.setGameState(Constants.GAME_STATE.ARRANGE);
+                }
+                else if(args[0].equals("waiting"))
+                    world.reset();
             }
         });
         mSocket.on("gameover", new Emitter.Listener() {
@@ -70,6 +75,12 @@ public class SocketHelper {
             public void call(Object... args) {
                 if(args[0].equals("waiting"))
                     world.setPlayWaiting(true);
+            }
+        });
+        mSocket.on("gameresult", new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                world.setGameResult((String)args[0]);
             }
         });
     }

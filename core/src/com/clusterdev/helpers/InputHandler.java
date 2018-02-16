@@ -84,6 +84,8 @@ public class InputHandler implements InputProcessor {
                 myWorld.arrangeComplete();
             else if(myWorld.getGameState() == Constants.GAME_STATE.PLAYING)
                 myWorld.fire();
+            else if(myWorld.getGameState() == Constants.GAME_STATE.OVER)
+                myWorld.rematch();
         }
         return true;
     }

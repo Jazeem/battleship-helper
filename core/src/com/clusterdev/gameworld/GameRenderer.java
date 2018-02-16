@@ -167,12 +167,23 @@ public class GameRenderer {
                                 RECT_SIZE, RECT_SIZE);
                 }
                 shapeRenderer.end();
-                batch.begin();
-                font.draw(batch, "Shots available: " + myWorld.getShotsAvailable(), B1X_OFFSET, B1Y_OFFSET);
-                font.draw(batch, "Fire", B2X_OFFSET, B2Y_OFFSET);
-                if(myWorld.isPlayWaiting())
-                    font.draw(batch, "Waiting for opponent", B1X_OFFSET, 2 * B1Y_OFFSET);
-                batch.end();
+
+
+                if(myWorld.getGameState() == Constants.GAME_STATE.PLAYING){
+                    batch.begin();
+                    font.draw(batch, "Shots available: " + myWorld.getShotsAvailable(), B1X_OFFSET, B1Y_OFFSET);
+                    font.draw(batch, "Fire", B2X_OFFSET, B2Y_OFFSET);
+                    if(myWorld.isPlayWaiting())
+                        font.draw(batch, "Waiting for opponent", B1X_OFFSET, 2 * B1Y_OFFSET);
+                    batch.end();
+                } else if(myWorld.getGameState() == Constants.GAME_STATE.OVER){
+                    batch.begin();
+                    font.draw(batch, "Game Result: " + myWorld.getGameResult(), B1X_OFFSET, B1Y_OFFSET);
+                    font.draw(batch, "Rematch", B2X_OFFSET, B2Y_OFFSET);
+                    if(myWorld.isOverWaiting())
+                        font.draw(batch, "Waiting for opponent", B1X_OFFSET, 2 * B1Y_OFFSET);
+                    batch.end();
+                }
             }
         }
     }

@@ -37,6 +37,10 @@ public class GameWorld {
         return playWaiting;
     }
 
+    public boolean isOverWaiting(){
+        return overWaiting;
+    }
+
     public Grid[][] getEnemyRectangles() {
         return enemyRectangles;
     }
@@ -46,6 +50,7 @@ public class GameWorld {
 
     private boolean arrangeWaiting = false;
     private boolean playWaiting = false;
+    private boolean overWaiting = false;
 
     private GAME_STATE gameState;
 
@@ -55,40 +60,11 @@ public class GameWorld {
         return myShips;
     }
 
-    Grid[][] myShips = new Grid[][]{
-            new Grid[]{
-
-                    new Grid(0, 0, Constants.GRID_STATE.NOT_FIRED),
-                    new Grid(0, 1, Constants.GRID_STATE.NOT_FIRED),
-                    new Grid(0, 2, Constants.GRID_STATE.NOT_FIRED),
-                    new Grid(0, 3, Constants.GRID_STATE.NOT_FIRED),
-                    new Grid(0, 4, Constants.GRID_STATE.NOT_FIRED)
-            },
-            new Grid[]{
-                    new Grid(1, 0, Constants.GRID_STATE.NOT_FIRED),
-                    new Grid(1, 1, Constants.GRID_STATE.NOT_FIRED),
-                    new Grid(1, 2, Constants.GRID_STATE.NOT_FIRED),
-                    new Grid(1, 3, Constants.GRID_STATE.NOT_FIRED)
-            },
-            new Grid[]{
-                    new Grid(2, 0, Constants.GRID_STATE.NOT_FIRED),
-                    new Grid(2, 1, Constants.GRID_STATE.NOT_FIRED),
-                    new Grid(2, 2, Constants.GRID_STATE.NOT_FIRED)
-            },
-            new Grid[]{
-                    new Grid(3, 0, Constants.GRID_STATE.NOT_FIRED),
-                    new Grid(3, 1, Constants.GRID_STATE.NOT_FIRED),
-                    new Grid(3, 2, Constants.GRID_STATE.NOT_FIRED)
-            },
-            new Grid[]{
-                    new Grid(4, 0, Constants.GRID_STATE.NOT_FIRED),
-                    new Grid(4, 1, Constants.GRID_STATE.NOT_FIRED)
-            }
-    };
-
-
+    Grid[][] myShips;
 
     int shipSelected = -1;
+
+    private String gameResult;
 
     public void setGameState(GAME_STATE gameState) {
         this.gameState = gameState;
@@ -97,8 +73,6 @@ public class GameWorld {
     public GameWorld(){
         reset();
         random = new Random();
-        gameState = GAME_STATE.LOBBY;
-
     }
 
     public void update(float delta) {
@@ -153,6 +127,42 @@ public class GameWorld {
                 rectangles[i][j] = new Grid(i, j, Constants.GRID_STATE.NOT_FIRED);
                 enemyRectangles[i][j] = new Grid(i, j, Constants.GRID_STATE.NOT_FIRED);
             }
+        gameState = GAME_STATE.LOBBY;
+        arrangeWaiting = false;
+        playWaiting = false;
+        overWaiting = false;
+        shotsAvailable = 6;
+        myShips = new Grid[][]{
+                new Grid[]{
+
+                        new Grid(0, 0, Constants.GRID_STATE.NOT_FIRED),
+                        new Grid(0, 1, Constants.GRID_STATE.NOT_FIRED),
+                        new Grid(0, 2, Constants.GRID_STATE.NOT_FIRED),
+                        new Grid(0, 3, Constants.GRID_STATE.NOT_FIRED),
+                        new Grid(0, 4, Constants.GRID_STATE.NOT_FIRED)
+                },
+                new Grid[]{
+                        new Grid(1, 0, Constants.GRID_STATE.NOT_FIRED),
+                        new Grid(1, 1, Constants.GRID_STATE.NOT_FIRED),
+                        new Grid(1, 2, Constants.GRID_STATE.NOT_FIRED),
+                        new Grid(1, 3, Constants.GRID_STATE.NOT_FIRED)
+                },
+                new Grid[]{
+                        new Grid(2, 0, Constants.GRID_STATE.NOT_FIRED),
+                        new Grid(2, 1, Constants.GRID_STATE.NOT_FIRED),
+                        new Grid(2, 2, Constants.GRID_STATE.NOT_FIRED)
+                },
+                new Grid[]{
+                        new Grid(3, 0, Constants.GRID_STATE.NOT_FIRED),
+                        new Grid(3, 1, Constants.GRID_STATE.NOT_FIRED),
+                        new Grid(3, 2, Constants.GRID_STATE.NOT_FIRED)
+                },
+                new Grid[]{
+                        new Grid(4, 0, Constants.GRID_STATE.NOT_FIRED),
+                        new Grid(4, 1, Constants.GRID_STATE.NOT_FIRED)
+                }
+        };
+        shipSelected = -1;
     }
 
     public void showHint() {
@@ -289,6 +299,7 @@ public class GameWorld {
 
     public void arrangeComplete() {
         Gdx.app.log("Arrange", "Complete");
+        shipSelected = -1;
         SocketHelper.getInstance(this).mSocket.emit("shiparranged", serializeShips());
     }
 
@@ -312,6 +323,10 @@ public class GameWorld {
         shotsAvailable = Character.getNumericValue(result.charAt(result.length() - 1));
     }
 
+    public String getGameResult() {
+        return gameResult;
+    }
+
     private void markResult(String result, Grid[][] rect){
         for(int i = 0; i < result.length(); i += 3){
             switch (result.charAt(i+2)){
@@ -333,5 +348,14 @@ public class GameWorld {
 
     public void markEnemyResult(String result) {
         markResult(result, rectangles);
+    }
+
+    public void setGameResult(String arg) {
+        gameState = GAME_STATE.OVER;
+        gameResult = arg;
+    }
+
+    public void rematch() {
+        SocketHelper.getInstance(this).mSocket.emit("rematch", "initiated");
     }
 }
