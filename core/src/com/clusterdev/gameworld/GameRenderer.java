@@ -15,6 +15,8 @@ import static com.clusterdev.Constants.B2X_OFFSET;
 import static com.clusterdev.Constants.B2Y_OFFSET;
 import static com.clusterdev.Constants.GAME_HEIGHT;
 import static com.clusterdev.Constants.GAME_WIDTH;
+import static com.clusterdev.Constants.HINT_X_OFFSET;
+import static com.clusterdev.Constants.HINT_Y_OFFSET;
 import static com.clusterdev.Constants.RECT_SIZE;
 import static com.clusterdev.Constants.xOffset;
 import static com.clusterdev.Constants.xOffsetEnemy;
@@ -175,6 +177,10 @@ public class GameRenderer {
                     font.draw(batch, "Fire", B2X_OFFSET, B2Y_OFFSET);
                     if(myWorld.isPlayWaiting())
                         font.draw(batch, "Waiting for opponent", B1X_OFFSET, 2 * B1Y_OFFSET);
+                    if(myWorld.isHintMode()){
+                        for(int i = 5; i >= 2; i--)
+                            font.draw(batch, String.valueOf(i), HINT_X_OFFSET, (GAME_HEIGHT / 4) * (i - 1));
+                    }
                     batch.end();
                 } else if(myWorld.getGameState() == Constants.GAME_STATE.OVER){
                     batch.begin();

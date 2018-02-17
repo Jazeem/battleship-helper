@@ -54,6 +54,12 @@ public class GameWorld {
 
     private GAME_STATE gameState;
 
+    private boolean hintMode = true;
+
+    public boolean isHintMode() {
+        return hintMode;
+    }
+
     private int shotsAvailable = 6;
 
     public Grid[][] getMyShips() {
@@ -80,43 +86,50 @@ public class GameWorld {
     }
 
     public void predictTargets(int x) {
-        int top, right, bottom, left, possibilities, maxPossibility = 1;
-        List<Grid> gridsWithHighestChance = new ArrayList<Grid>();
-        List<Grid> gridsWithHighestChanceEven = new ArrayList<Grid>();
-        if(x > 1 && x < 6){
-            for(int i = 0; i < 10; i++)
-                for (int j = 0 ; j < 10; j++){
-                    if(rectangles[i][j].getState() == Constants.GRID_STATE.NOT_FIRED){
-                        top = right = bottom = left = 0;
-                        for(int k = j; k > (j - x) && k >= 0 && rectangles[i][k].getState() == Constants.GRID_STATE.NOT_FIRED; k--)
-                            top++;
-                        for(int k = i; k < (i + x) && k <= 9 && rectangles[k][j].getState() == Constants.GRID_STATE.NOT_FIRED; k++)
-                            right++;
-                        for(int k = j; k < (j + x) && k <= 9 && rectangles[i][k].getState() == Constants.GRID_STATE.NOT_FIRED; k++)
-                            bottom++;
-                        for(int k = i; k > (i - x) && k >= 0 && rectangles[k][j].getState() == Constants.GRID_STATE.NOT_FIRED; k--)
-                            left++;
-                        possibilities = Math.max(top + bottom - x, 0) + Math.max(right + left - x, 0);
-                        if(possibilities > maxPossibility){
-                            maxPossibility = possibilities;
-                            gridsWithHighestChance = new ArrayList<Grid>();
-                            gridsWithHighestChance.add(rectangles[i][j]);
-                        } else if(possibilities == maxPossibility){
-                            gridsWithHighestChance.add(rectangles[i][j]);
-                        }
+        Gdx.app.log("prediction for length", String.valueOf(x));
+        if(shotsAvailable > 0){
+            int top, right, bottom, left, possibilities, maxPossibility = 1;
+            List<Grid> gridsWithHighestChance = new ArrayList<Grid>();
+            List<Grid> gridsWithHighestChanceEven = new ArrayList<Grid>();
+            if(x > 1 && x < 6){
+                for(int i = 0; i < 10; i++)
+                    for (int j = 0 ; j < 10; j++){
+                        if(enemyRectangles[i][j].getState() == Constants.GRID_STATE.NOT_FIRED){
+                            top = right = bottom = left = 0;
+                            for(int k = j; k > (j - x) && k >= 0 && enemyRectangles[i][k].getState() == Constants.GRID_STATE.NOT_FIRED; k--)
+                                top++;
+                            for(int k = i; k < (i + x) && k <= 9 && enemyRectangles[k][j].getState() == Constants.GRID_STATE.NOT_FIRED; k++)
+                                right++;
+                            for(int k = j; k < (j + x) && k <= 9 && enemyRectangles[i][k].getState() == Constants.GRID_STATE.NOT_FIRED; k++)
+                                bottom++;
+                            for(int k = i; k > (i - x) && k >= 0 && enemyRectangles[k][j].getState() == Constants.GRID_STATE.NOT_FIRED; k--)
+                                left++;
+                            possibilities = Math.max(top + bottom - x, 0) + Math.max(right + left - x, 0);
+                            if(possibilities > maxPossibility){
+                                maxPossibility = possibilities;
+                                gridsWithHighestChance = new ArrayList<Grid>();
+                                gridsWithHighestChance.add(enemyRectangles[i][j]);
+                            } else if(possibilities == maxPossibility){
+                                gridsWithHighestChance.add(enemyRectangles[i][j]);
+                            }
 
+                        }
+                    }
+                if(gridsWithHighestChance.size() > 0){
+                    gridsWithHighestChanceEven = new ArrayList<Grid>();
+                    for (Grid grid: gridsWithHighestChance) {
+                        if((grid.getX() + grid.getY()) % 2 == 0 )
+                            gridsWithHighestChanceEven.add(grid);
+                    }
+                    if(gridsWithHighestChanceEven.size() > 0){
+                        gridsWithHighestChanceEven.get(random.nextInt(gridsWithHighestChanceEven.size())).markTarget();
+                        shotsAvailable--;
+                    }
+                    else{
+                        gridsWithHighestChance.get(random.nextInt(gridsWithHighestChance.size())).markTarget();
+                        shotsAvailable--;
                     }
                 }
-            if(gridsWithHighestChance.size() > 0){
-                gridsWithHighestChanceEven = new ArrayList<Grid>();
-                for (Grid grid: gridsWithHighestChance) {
-                    if((grid.getX() + grid.getY()) % 2 == 0 )
-                        gridsWithHighestChanceEven.add(grid);
-                }
-                if(gridsWithHighestChanceEven.size() > 0)
-                    gridsWithHighestChanceEven.get(random.nextInt(gridsWithHighestChanceEven.size())).markTarget();
-                else
-                    gridsWithHighestChance.get(random.nextInt(gridsWithHighestChance.size())).markTarget();
             }
         }
     }

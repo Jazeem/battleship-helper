@@ -12,6 +12,7 @@ import static com.clusterdev.Constants.B2X_OFFSET;
 import static com.clusterdev.Constants.B2Y_OFFSET;
 import static com.clusterdev.Constants.GAME_HEIGHT;
 import static com.clusterdev.Constants.GAME_WIDTH;
+import static com.clusterdev.Constants.HINT_X_OFFSET;
 import static com.clusterdev.Constants.RECT_SIZE;
 import static com.clusterdev.Constants.xOffset;
 import static com.clusterdev.Constants.xOffsetEnemy;
@@ -75,17 +76,22 @@ public class InputHandler implements InputProcessor {
         }
         if(myWorld.getGameState() == Constants.GAME_STATE.ARRANGE){
             if(screenX < (100 + B1X_OFFSET) && screenX > B1X_OFFSET && screenY > (GAME_HEIGHT - B1Y_OFFSET)
-                    && screenY < (GAME_HEIGHT - (B1Y_OFFSET - 40)))
+                    && screenY < (GAME_HEIGHT - (B1Y_OFFSET - 60)))
                 myWorld.flipClicked();
         }
-        if(screenX < (B2X_OFFSET + 100) && screenX > B2X_OFFSET && screenY > (GAME_HEIGHT - B2Y_OFFSET)
-                && screenY < (GAME_HEIGHT - (B2Y_OFFSET - 40))) {
+        if(screenX < (B2X_OFFSET + 200) && screenX > (B2X_OFFSET - 200) && screenY > (GAME_HEIGHT - 2 * B2Y_OFFSET)
+                && screenY < GAME_HEIGHT) {
             if(myWorld.getGameState() == Constants.GAME_STATE.ARRANGE)
                 myWorld.arrangeComplete();
             else if(myWorld.getGameState() == Constants.GAME_STATE.PLAYING)
                 myWorld.fire();
             else if(myWorld.getGameState() == Constants.GAME_STATE.OVER)
                 myWorld.rematch();
+        }
+        if(myWorld.getGameState() == Constants.GAME_STATE.PLAYING && myWorld.isHintMode()){
+            if(screenX > HINT_X_OFFSET){
+                myWorld.predictTargets(5 - (screenY / (GAME_HEIGHT / 4)));
+            }
         }
         return true;
     }

@@ -33,4 +33,6 @@ public class Constants {
     public static final int B1Y_OFFSET = 80;
     public static final int B2X_OFFSET = 1000;
     public static final int B2Y_OFFSET = 80;
+    public static final int HINT_X_OFFSET = 1800;
+    public static final int HINT_Y_OFFSET = 200;
 }
