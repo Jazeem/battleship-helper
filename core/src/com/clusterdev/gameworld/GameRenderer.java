@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
+import static com.clusterdev.Constants.GAME_SIZE;
 import static com.clusterdev.Constants.RECT_SIZE;
 
 /**
@@ -20,7 +21,7 @@ public class GameRenderer {
     public GameRenderer(GameWorld world) {
         myWorld = world;
         cam = new OrthographicCamera();
-        cam.setToOrtho(true, 250, 250);
+        cam.setToOrtho(true, GAME_SIZE/2, GAME_SIZE/2);
         shapeRenderer = new ShapeRenderer();
         shapeRenderer.setProjectionMatrix(cam.combined);
     }
